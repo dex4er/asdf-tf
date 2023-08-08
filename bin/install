@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+shopt -s inherit_errexit 2>/dev/null || true
+
+[[ -z ${ASDF_INSTALL_TYPE+x} ]] && echo "ASDF_INSTALL_TYPE is required" && exit 1
+[[ -z ${ASDF_INSTALL_VERSION+x} ]] && echo "ASDF_INSTALL_VERSION is required" && exit 1
+[[ -z ${ASDF_INSTALL_PATH+x} ]] && echo "ASDF_INSTALL_PATH is required" && exit 1
+
+function gh_curl() {
+	if [[ -n ${GITHUB_TOKEN-} ]]; then
+		curl -fLsS -H "Authorization: token ${GITHUB_TOKEN}" "$@"
+	else
+		curl -fLsS "$@"
+	fi
+}
+
+function install() {
+	# set -x
+	local install_type=$1
+	[[ ${install_type} != "version" ]] && echo "install type, ${install_type}, is not supported" && exit 1
+
+	local prefix="v"
+	local version=$2
+	local install_path=$3
+
+	local tmp_download_dir
+
+	if [[ -z ${TMPDIR-} ]]; then
+		tmp_download_dir=$(mktemp -d)
+	else
+		tmp_download_dir=${TMPDIR%/}
+	fi
+
+	local bin_install_path="${install_path}/bin"
+
+	local platform
+	platform=$(uname -s | tr 'A-Z' 'a-z')
+
+	local arch
+	arch=$(uname -m)
+	case "${arch}" in
+	aarch64) arch=arm64 ;;
+	x86_64) arch=amd64 ;;
+	esac
+
+	local download_url
+
+	local repo="dex4er/tf"
+	local download_filename="tf-${platform}-${arch}"
+
+	if [[ -n ${GITHUB_TOKEN-} ]]; then
+		local asset_url
+		asset_url="https://api.github.com/repos/${repo}/releases/tags/${prefix}${version}"
+		download_url=$(gh_curl -H "Accept: application/vnd.github.v3.raw" "${asset_url}" | jq -r ".assets | map(select(.name == \"${download_filename}\"))[0].url")
+		if [[ ${download_url} == null ]]; then
+			echo "Asset ${download_filename} not found in a release."
+			exit 1
+		fi
+	else
+		download_url="https://github.com/${repo}/releases/download/${prefix}${version}/${download_filename}"
+	fi
+
+	echo "Downloading from ${download_url}"
+
+	mkdir -p "${tmp_download_dir}"
+
+	pushd "${tmp_download_dir}" >/dev/null
+
+	gh_curl -H "Accept: application/octet-stream" -o "${download_filename}" "${download_url}"
+
+	mkdir -p "${bin_install_path}"
+
+	chmod +x "${download_filename}"
+	cp -fp "${download_filename}" "${bin_install_path}/tf"
+
+	popd >/dev/null
+}
+
+install "${ASDF_INSTALL_TYPE}" "${ASDF_INSTALL_VERSION}" "${ASDF_INSTALL_PATH}"

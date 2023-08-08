@@ -1,0 +1,7 @@
+enable=all
+disable=SC2005 # Useless echo? Instead of 'echo $(cmd)', just use 'cmd'.
+disable=SC2018 # Use '[:lower:]' to support accents and foreign alphabets.
+disable=SC2019 # Use '[:upper:]' to support accents and foreign alphabets.
+disable=SC2046 # Quote this to prevent word splitting.
+disable=SC2249 # Consider adding a default *) case, even if it just exits with error.
+disable=SC2312 # Consider invoking this command separately to avoid masking its return value (or use '|| true' to ignore).
