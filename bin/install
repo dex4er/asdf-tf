@@ -61,7 +61,7 @@ function install() {
 		download_url="https://github.com/${repo}/releases/download/${prefix}${version}/${download_filename}"
 	fi
 
-	echo "Downloading from ${download_url}"
+	echo "Downloading ${download_filename} from ${download_url}"
 
 	mkdir -p "${tmp_download_dir}"
 
