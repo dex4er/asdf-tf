@@ -28,11 +28,7 @@ function install() {
 
 	local tmp_download_dir
 
-	if [[ -z ${TMPDIR-} ]]; then
-		tmp_download_dir=$(mktemp -d)
-	else
-		tmp_download_dir=${TMPDIR%/}
-	fi
+	tmp_download_dir=$(mktemp -d -t asdf.XXXXXXXX)
 
 	local bin_install_path="${install_path}/bin"
 
