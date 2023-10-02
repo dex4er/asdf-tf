@@ -51,7 +51,7 @@ function install() {
 	local repo="dex4er/tf"
 	local download_filename="tf-${platform}-${arch}"
 
-	if [[ -n ${GITHUB_TOKEN-} ]]; then
+	if [[ -n ${GITHUB_TOKEN-} ]] || [[ -n ${GITHUB_API_TOKEN-} ]]; then
 		local asset_url
 		asset_url="https://api.github.com/repos/${repo}/releases/tags/${prefix}${version}"
 		download_url=$(gh_curl -H "Accept: application/vnd.github.v3.raw" "${asset_url}" | jq -r ".assets | map(select(.name == \"${download_filename}\"))[0].url")
