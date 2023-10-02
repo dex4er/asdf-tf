@@ -56,14 +56,14 @@ function install() {
 		asset_url="https://api.github.com/repos/${repo}/releases/tags/${prefix}${version}"
 		download_url=$(gh_curl -H "Accept: application/vnd.github.v3.raw" "${asset_url}" | jq -r ".assets | map(select(.name == \"${download_filename}\"))[0].url")
 		if [[ ${download_url} == null ]]; then
-			echo "Asset ${download_filename} not found in a release."
+			echo "Asset ${download_filename} not found in a release ${prefix}${version}."
 			exit 1
 		fi
 	else
 		download_url="https://github.com/${repo}/releases/download/${prefix}${version}/${download_filename}"
 	fi
 
-	echo "Downloading ${download_filename} with version ${version} from ${download_url}"
+	echo "Downloading ${download_filename} from release ${prefix}${version} from ${download_url}"
 
 	mkdir -p "${tmp_download_dir}"
 
