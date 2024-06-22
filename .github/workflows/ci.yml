@@ -22,7 +22,7 @@ jobs:
           - container: alpine:latest
             preinstall: apk add bash coreutils curl git jq
           - container: amazonlinux:latest
-            preinstall: dnf -y install git jq
+            preinstall: dnf -y install git findutils jq
           - container: ubuntu:latest
             preinstall: apt-get -y update && apt-get -y install curl git jq
 
