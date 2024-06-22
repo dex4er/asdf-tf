@@ -14,15 +14,15 @@ on:
       - LICENSE
 
 jobs:
-  ubuntu:
+  linux:
     strategy:
       fail-fast: false
       matrix:
         include:
           - container: alpine:latest
             preinstall: apk add bash coreutils curl git jq
-          - container: centos:latest
-            preinstall: dnf -y --disablerepo '*' --enablerepo=extras swap centos-linux-repos centos-stream-repos && dnf -y install git jq
+          - container: amazonlinux:latest
+            preinstall: dnf -y install git jq
           - container: ubuntu:latest
             preinstall: apt-get -y update && apt-get -y install curl git jq
 
