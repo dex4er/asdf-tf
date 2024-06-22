@@ -33,10 +33,10 @@ function install() {
 	local bin_install_path="${install_path}/bin"
 
 	local platform
-	platform=$(uname -s | tr 'A-Z' 'a-z')
+	platform=$(${ASDF_PLATFORM:-$(uname -s)} | tr 'A-Z' 'a-z')
 
 	local arch
-	arch=$(uname -m)
+	arch=${ASDF_ARCH:-$(uname -m)}
 	case "${arch}" in
 	aarch64) arch=arm64 ;;
 	x86_64) arch=amd64 ;;
